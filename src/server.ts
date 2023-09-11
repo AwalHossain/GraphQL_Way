@@ -3,34 +3,101 @@ import { startStandaloneServer } from '@apollo/server/standalone';
 
 
 const typeDefs = `#graphql
+    type Product {
+        id: ID!
+        description: String
+        reviews: [Review]
+        price: Float!
+    }
 
-type Book {
-    title: String
-    author: String
-}
+    type Review {
+        id: ID!
+        rating: Int
+        comment: String
+    }
 
-type Query {
-    books: [Book]
-}
+    type Order {
+        id: ID!
+        date: String!
+        subTotal: Float!
+        items: [OrderItem]
+    }
+
+    type OrderItem {
+        product: Product
+        quantity: Int!
+    }
+
+    type Query {
+        product: [Product]
+        order: [Order]
+        orderItem: [OrderItem]
+    }
+    # type 
 `
 
-
-const books = [
+const review = [
     {
-        title: 'Harry Potter and the Chamber of Secrets',
-        author: 'J.K. Rowling',
+        id: 1,
+        rating: 5,
+        comment: 'A great shoe'
+
     },
     {
-        title: 'Jurassic Park',
-        author: 'Michael Crichton'
+        id: 2,
+        rating: 4,
+        comment: 'A well suited shoe'
+    }
+]
+
+const products = [
+    {
+        id: 1,
+        description: 'A nice Red Shoe',
+        price: 100.00,
+        reviews: [review[0]]
+    },
+    {
+        id: 2,
+        description: 'A nice Blue Shoe',
+        price: 120.00,
+        reviews: [review[1]]
     }
 ]
 
 
+
+const orderItem = [
+    {
+        products: products[0],
+        quantity: 1
+    },
+    {
+        products: products[1],
+        quantity: 1
+    }
+]
+
+const orders = [
+    {
+        id: 1,
+        date: '2020-01-01',
+        subTotal: 225.00,
+        items: orderItem
+
+    }
+]
+
+
+
+
 const resolvers = {
     Query: {
-        books: () => books,
+        product: () => products,
+        order: () => orders,
+        orderItem: () => orderItem
     }
+
 }
 
 
