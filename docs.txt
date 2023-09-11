@@ -1,0 +1,31 @@
+npm i graphql
+npm i express-graphql
+
+const {builSchema}  = require('graphql')
+const {graphqlHTTP} =  require('express-graphql')
+
+
+const app = express()
+
+
+
+const schema = buildSchema(`
+    type Query {
+        hello: String
+        description: String
+        price: Float
+    }
+`)
+
+
+const root = {
+    hello: () => 'Hello World',
+    description: 'This is a product',
+    price: 123.45
+}
+
+app.use('/graphql', graphqlHTTP({
+    schema: schema,
+    rootValue: root,
+}))
+
