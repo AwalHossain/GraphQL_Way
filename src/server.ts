@@ -1,35 +1,53 @@
-import express from 'express';
-import { graphqlHTTP } from 'express-graphql';
-import { buildSchema } from 'graphql';
+import { ApolloServer } from '@apollo/server';
+import { startStandaloneServer } from '@apollo/server/standalone';
 
 
-const app = express();
+const typeDefs = `#graphql
+
+type Book {
+    title: String
+    author: String
+}
+
+type Query {
+    books: [Book]
+}
+`
 
 
-const schema = buildSchema(`  
-    type Query{
-        description: String
-        price: Float
+const books = [
+    {
+        title: 'Harry Potter and the Chamber of Secrets',
+        author: 'J.K. Rowling',
+    },
+    {
+        title: 'Jurassic Park',
+        author: 'Michael Crichton'
     }
-`)
+]
 
-const root = {
-    description: `A simple Red T-Shirt`,
-    price: 123.45
+
+const resolvers = {
+    Query: {
+        books: () => books,
+    }
 }
 
 
-app.use('/graphql',graphqlHTTP({
-    schema: schema,
-    rootValue: root,
-    pretty: true,
-    graphiql: true
-}))
+
+const server = new ApolloServer({ typeDefs, resolvers })
 
 
+async function bootstrap() {
 
-app.listen(3000,()=>{
-    
-    console.log('Server is running on port 3000');
+    const { url } = await startStandaloneServer(server, {
+        listen: {
+            port: 4000
+        }
+    })
 
-}  );
+    console.log(`Server ready at ${url}`)
+
+}
+bootstrap()
+
